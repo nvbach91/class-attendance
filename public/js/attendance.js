@@ -40,7 +40,7 @@ $(document).ready(() => {
     App.alertPlaceholder = $('#alert-placeholder');
     App.attendanceForm = $('#attendance-form');
     if (!/[a-z0-9]{6}/.test(uuid)) {
-        return App.attendanceForm.replaceWith(`<div class="alert alert-danger" role="alert">Oops! Looks live you have thr wrong link. Please click <a href="/link">here</a></div>`)
+        return App.attendanceForm.replaceWith(`<div class="alert alert-danger" role="alert">Oops! Looks live you have the wrong link. Please click <a href="/link">here</a></div>`)
     }
     App.attendanceForm.find('[name="uuid"]').val(uuid);
     const xnameInput = App.attendanceForm.find('[name="xname"]');
