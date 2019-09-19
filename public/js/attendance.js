@@ -1,5 +1,5 @@
 const App = {};
-App.server = 'http://localhost:3000';
+App.server = '';
 
 App.lang = {
     'srv_xname_not_found': 'Your xname is not found. Please contact your tutor',
@@ -14,9 +14,6 @@ App.doneNotification = $('<i class="material-icons notification success">check_c
 App.errorNotification = $('<i class="material-icons notification error">error</div>');
 
 App.handleFinishAjax = (response) => {
-    if (response.xname) {
-        localStorage.setItem('xname', response.xname);
-    }
     const resp = response.responseJSON ? response.responseJSON : response;
     const alertType = resp.success ? 'success' : 'danger';
     const alertMsg = $(`<div class="alert alert-${alertType}" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
@@ -27,7 +24,11 @@ App.handleFinishAjax = (response) => {
         App.attendanceForm.find('button[type="submit"]').after(App.errorNotification);
         App.loadingCircle.detach();
     } else {
+        if (response.xname) {
+            localStorage.setItem('xname', response.xname);
+        }
         App.loadingCircle.before(App.doneNotification);
+        App.loadingCircle.before(`<div class="alert alert-success" role="alert"><strong>${response.xname}<strong></div>`);
         App.loadingCircle.detach();
         $('.card-header p').remove();
     }

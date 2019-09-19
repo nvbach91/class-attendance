@@ -14,7 +14,7 @@ const getColumnToUpdate = (now, validColumnNumberByUuid) => {
   const startTimes = Object.values(startTimesByColumn);
   for (let i = 0; i < startTimes.length; i++) {
     let startTime = startTimes[i];
-    if (now.getTime() > startTime.getTime() && now.getTime() < startTime.getTime() + allowedTime) {
+    if (now.getTime() > startTime.getTime() - 600000 && now.getTime() < startTime.getTime() + allowedTime) {
       if (i + 1 === validColumnNumberByUuid) {
         return validColumnNumberByUuid;
       }
@@ -31,8 +31,15 @@ const pad = (s, l, c) => {
   return ss;
 };
 
+router.get('/allowed-time', (req, res) => {
+  res.json(config.allowedTime);
+});
+router.get('/valid-times', (req, res) => {
+  res.json(config.validTimes);
+});
+
 router.post('/attend', (req, res) => {
-  const now = new Date('2019-10-11T13:14:59Z');
+  const now = new Date('2019-09-20T09:00:00Z');
   const validColumnNumberByUuid = columnNumbersByUuid[req.body.uuid];
   if (!validColumnNumberByUuid) {
     return res.status(400).json({ success: false, msg: 'srv_invalid_uuid' });
