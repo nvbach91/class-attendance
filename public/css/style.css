@@ -47,8 +47,31 @@ footer {
   color: white;
 }
 .attendance-url {
-  font-size: 24px;
+  font-size: 14px;
 }
 .card-body {
   text-align: center;
+}
+button .text-muted {
+  text-decoration: line-through;
+}
+.upcoming-class {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+@media screen and (min-width: 480px) {
+  .attendance-url {
+    font-size: 18px;
+  }
+}
+@media screen and (min-width: 720px) {
+  .attendance-url {
+    font-size: 20px;
+  }
+}
+@media screen and (min-width: 840px) {
+  .attendance-url {
+    font-size: 24px;
+  }
 }
