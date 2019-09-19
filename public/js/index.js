@@ -14,24 +14,22 @@ App.doneNotification = $('<i class="material-icons notification success">check_c
 App.errorNotification = $('<i class="material-icons notification error">error</div>');
 
 App.handleFinishAjax = (response) => {
-    if (response) {
-        if (response.xname) {
-            localStorage.setItem('xname', response.xname);
-        }
-        const resp = response.responseJSON ? response.responseJSON : response;
-        const alertType = resp.success ? 'success' : 'danger';
-        const alertMsg = $(`<div class="alert alert-${alertType}" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
-        App.alertPlaceholder.replaceWith(alertMsg);
-        App.alertPlaceholder = alertMsg;
-        if (response.responseJSON) {
-            App.loadingCircle.before(App.attendanceForm);
-            App.attendanceForm.find('button[type="submit"]').after(App.errorNotification);
-            App.loadingCircle.detach();
-        } else {
-            App.loadingCircle.before(App.doneNotification);
-            App.loadingCircle.detach();
-            $('.card-header p').remove();
-        }
+    if (response.xname) {
+        localStorage.setItem('xname', response.xname);
+    }
+    const resp = response.responseJSON ? response.responseJSON : response;
+    const alertType = resp.success ? 'success' : 'danger';
+    const alertMsg = $(`<div class="alert alert-${alertType}" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
+    App.alertPlaceholder.replaceWith(alertMsg);
+    App.alertPlaceholder = alertMsg;
+    if (response.responseJSON) {
+        App.loadingCircle.before(App.attendanceForm);
+        App.attendanceForm.find('button[type="submit"]').after(App.errorNotification);
+        App.loadingCircle.detach();
+    } else {
+        App.loadingCircle.before(App.doneNotification);
+        App.loadingCircle.detach();
+        $('.card-header p').remove();
     }
 };
 
