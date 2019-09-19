@@ -12,7 +12,7 @@ $(document).ready(function () {
         const qrCodeContainer = $('#qrcode');
         const qrcode = new QRCode('qrcode');
         const uuids = Object.keys(validTimes);
-        const now = new Date('2019-09-20T09:00:00Z');
+        const now = new Date();
         let uuid = '';
         for (let i = 0; i < uuids.length; i++) {
             uuid = uuids[i];

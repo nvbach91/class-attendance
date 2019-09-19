@@ -39,7 +39,7 @@ router.get('/valid-times', (req, res) => {
 });
 
 router.post('/attend', (req, res) => {
-  const now = new Date('2019-09-20T09:00:00Z');
+  const now = new Date();
   const validColumnNumberByUuid = columnNumbersByUuid[req.body.uuid];
   if (!validColumnNumberByUuid) {
     return res.status(400).json({ success: false, msg: 'srv_invalid_uuid' });
