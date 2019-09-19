@@ -52,7 +52,7 @@ footer {
 .card-body {
   text-align: center;
 }
-button .text-muted {
+button.text-muted {
   text-decoration: line-through;
 }
 .upcoming-class {

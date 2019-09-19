@@ -1,4 +1,12 @@
+const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+const pad = (s, l, c) => {
+    let ss = s.toString();
+    while (ss.length < l) {
+        ss = c + ss;
+    }
+    return ss;
+};
 $(document).ready(function () {
     $('body').bootstrapMaterialDesign();
     let allowedTime = 18000000;
@@ -31,26 +39,28 @@ $(document).ready(function () {
                 <a class="attendance-url" href=${url}>${url}</a>
                 <hr>
                 <div class="d-flex justify-content-between">
-                    <strong>Week ${validTimes[uuid].column}</strong>
-                    <strong>${new Date(validTimes[uuid].date).toLocaleDateString('cs')}</strong>
+                    <strong>Week ${pad(validTimes[uuid].column, 2, '0')}</strong>
+                    <span>${daysOfWeek[new Date(validTimes[uuid].date).getDay()]}</span>
+                    <strong>${new Date(validTimes[uuid].date).toLocaleDateString('cs').split('. ').map((dp) => pad(dp, 2, '0')).join('.')}</strong>
                 </div>`
             );
         } else {
             qrCodeContainer.before(`<div class="alert alert-danger" role="alert">There is no active attendance session</div>`)
         }
-        
-        var weeks = Object.values(validTimes);
+
+        const weeks = Object.values(validTimes);
         weeks.sort((a, b) => a.column - b.column);
         $('#main').append(`
             <br>
             <div class="card">
                 <div class="card-header">Upcoming classes</div>
                 <div class="card-body">
-                ${weeks.map((week) => { 
+                ${weeks.map((week) => {
                     return `
                         <button class="upcoming-class btn btn-primary ${now > new Date(week.date) ? 'text-muted' : 'font-weight-bold'}">
-                            <span>Week ${week.column}</span>
-                            <span>${new Date(week.date).toLocaleDateString('cs')}</span>
+                            <span>Week ${pad(week.column, 2, '0')}</span>
+                            <span>${daysOfWeek[new Date(week.date).getDay()]}</span>
+                            <span>${new Date(week.date).toLocaleDateString('cs').split('. ').map((dp) => pad(dp, 2, '0')).join('.')}</span>
                         </button>
                     `;
                 }).join('')}
