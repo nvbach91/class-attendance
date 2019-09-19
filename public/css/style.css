@@ -43,3 +43,6 @@ footer {
 .footer-badge {
   height: 13px;
 }
+.navbar-dark .material-icons {
+  color: white;
+}
