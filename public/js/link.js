@@ -28,7 +28,7 @@ $(document).ready(function () {
             qrcode.makeCode(url);
             qrCodeContainer.after(`
                 <hr>
-                <a href=${url}>${url}</a>
+                <a class="attendance-url" href=${url}>${url}</a>
                 <hr>
                 <div class="d-flex justify-content-between">
                     <strong>T${validTimes[uuid].column}</strong>

@@ -46,3 +46,9 @@ footer {
 .navbar-dark .material-icons {
   color: white;
 }
+.attendance-url {
+  font-size: 24px;
+}
+.card-body {
+  text-align: center;
+}
