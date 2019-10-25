@@ -12,6 +12,43 @@ App.lang = {
 App.loadingCircle = $('<div class="lds-dual-ring"></div>');
 App.doneNotification = $('<i class="material-icons notification success">check_circle</div>');
 App.errorNotification = $('<i class="material-icons notification error">error</div>');
+App.getSmile = (points) => {
+    switch (+points) {
+        case 15:
+            return 'fas fa-heart-broken';
+        case 14:
+            return 'fas fa-heart';
+        case 13:
+            return 'far fa-kiss-wink-heart';
+        case 12:
+            return 'far fa-kiss-beam';
+        case 11:
+            return 'far fa-laugh-wink';
+        case 10:
+            return 'far fa-grin-hearts';
+        case 9:
+            return 'far fa-laugh-beam';
+        case 8:
+            return 'far fa-grin-squint-tears';
+        case 7:
+            return 'far fa-grin-squint';
+        case 6:
+            return 'far fa-smile-beam';
+        case 5:
+            return 'far fa-smile-wink';
+        case 4:
+            return 'far fa-smile';
+        case 3:
+            return 'far fa-grin';
+        case 2:
+            return 'far fa-grin-beam-sweat';
+        case 1:
+            return 'far fa-poop';
+        case 0:
+            return 'far fa-poop';
+    }
+}
+
 
 App.handleFinishAjax = (response) => {
     const resp = response.responseJSON ? response.responseJSON : response;
@@ -19,7 +56,7 @@ App.handleFinishAjax = (response) => {
     const alertMsg = $(`<div class="alert alert-${alertType}" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
     App.alertPlaceholder.replaceWith(alertMsg);
     App.alertPlaceholder = alertMsg;
-    if (response.responseJSON) {
+    if (response.readyState === 0 || response.responseJSON) {
         App.loadingCircle.before(App.attendanceForm);
         App.attendanceForm.find('button[type="submit"]').after(App.errorNotification);
         App.loadingCircle.detach();
@@ -28,7 +65,16 @@ App.handleFinishAjax = (response) => {
             localStorage.setItem('xname', response.xname);
         }
         App.loadingCircle.before(App.doneNotification);
-        App.loadingCircle.before(`<div class="alert alert-success" role="alert"><strong>${response.xname}<strong></div>`);
+        App.loadingCircle.before(`
+            <div class="alert alert-success" role="alert">
+                <strong>${response.xname}</strong>
+                <br>
+                <strong>${response.name}</strong>
+                <br>
+                Points: <strong>${response.points}</strong> 
+                <br>
+                <i class="${App.getSmile(response.points)}"></i>
+            </div>`);
         App.loadingCircle.detach();
         $('.card-header p').remove();
     }

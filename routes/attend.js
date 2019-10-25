@@ -51,7 +51,8 @@ router.post('/attend', (req, res) => {
 
   // spreadsheet key is the long id in the sheets URL
   const doc = new GoogleSpreadsheet(config.spreadsheetId);
-  var sheet;
+  var attendanceSheet;
+  var assesmentSheet;
 
   async.series([
     (step) => {
@@ -59,21 +60,22 @@ router.post('/attend', (req, res) => {
     },
     (step) => {
       doc.getInfo((err, info) => {
-        sheet = info.worksheets[0];
+        attendanceSheet = info.worksheets[0];
+        assesmentSheet = info.worksheets[1];
         step();
       });
     },
     (step) => {
-      const maxCol = 14;
-      const getCellConfig = {
+      const attendanceSheetMaxCol = 14;
+      const attendanceSheetConfig = {
         'min-row': 3,
         'max-row': 60,
         'min-col': 1,
-        'max-col': maxCol,
+        'max-col': attendanceSheetMaxCol,
         'return-empty': true
       };
-      sheet.getCells(getCellConfig, (err, cells) => {
-        const rows = chunk(cells.map((cell) => cell.value), maxCol);
+      attendanceSheet.getCells(attendanceSheetConfig, (err, cells) => {
+        const rows = chunk(cells.map((cell) => cell.value), attendanceSheetMaxCol);
         const xnames = {};
         rows.forEach((row, i) => {
           const xname = row[0].trim();
@@ -85,7 +87,7 @@ router.post('/attend', (req, res) => {
           return res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
         }
         const rowIndex = xnames[req.body.xname].rowIndex;
-        const cellIndex = rowIndex * maxCol + columnToUpdate;
+        const cellIndex = rowIndex * attendanceSheetMaxCol + columnToUpdate;
         const cell = cells[cellIndex];
         if (cell.value) {
           return res.status(400).json({ success: false, msg: 'srv_already_registered' });
@@ -93,9 +95,8 @@ router.post('/attend', (req, res) => {
         //${pad(now.getDate(), 2, '0')}.${pad(now.getMonth() + 1, 2, '0')}.${now.getFullYear()} 
         cell.value = `${pad(now.getHours(), 2, '0')}:${pad(now.getMinutes(), 2 , '0')}:${pad(now.getSeconds(), 2, '0')}`;
         cell.save(() => {
-          res.status(200).json({ success: true, msg: 'srv_success', xname: req.body.xname });
-          //sheet.bulkUpdateCells(cells);
-          step();
+          returnUserInfo(req, assesmentSheet, res, step);
+          //attendanceSheet.bulkUpdateCells(cells);
         });
       });
     },
@@ -105,5 +106,37 @@ router.post('/attend', (req, res) => {
     }
   });
 });
+
+const returnUserInfo = (req, assesmentSheet, res, step) => {
+  const assesmentMaxCol = 18;
+  const assesmentSheetConfig = {
+    'min-row': 3,
+    'max-row': 60,
+    'min-col': 1,
+    'max-col': assesmentMaxCol,
+    'return-empty': true
+  };
+  assesmentSheet.getCells(assesmentSheetConfig, (err, cells) => {
+    const rows = chunk(cells.map((cell) => cell.value), assesmentMaxCol);
+    const xnames = {};
+    rows.forEach((row, i) => {
+      const xname = row[0].trim();
+      if (xname) {
+        xnames[xname] = { 
+          name: row[assesmentMaxCol - 1],
+          points: row[assesmentMaxCol - 2],
+        };
+      }
+    });
+    res.status(200).json({ 
+      success: true, 
+      msg: 'srv_success', 
+      xname: req.body.xname, 
+      name: xnames[req.body.xname].name, 
+      points: xnames[req.body.xname].points 
+    });
+    step();
+  });
+};
 
 module.exports = router;
