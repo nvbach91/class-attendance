@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        .projects { 
+            display: flex; 
+            flex-wrap: wrap;
+        }
+        .project {
+            width: calc(100% / 2);
+            border: 10px solid white;
+        }
+        iframe { border: none };
+        @media screen and (min-width: 720px) {
+            .project {
+                width: calc(100% / 3);
+            }
+        }
+        @media screen and (min-width: 1280px) {
+            .project {
+                width: calc(100% / 4);
+            }
+        }
+        @media screen and (min-width: 1366px) {
+            .project {
+                width: calc(100% / 5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Class projects 2018/2019</h1>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script>
+        const xnames = [
+        'bala00/project_1',
+        //'binp00',
+        'braj08/SP2',
+        'dohp02/SP2',
+        'dusv03/SP2',
+        'fram05/semestralni_prace_1',
+        //'hajd05',
+        'hosa04/SP2',
+        'janf04/semestralka2',
+        //'xkahj06',
+        'kasj08/semestralka2',
+        //'kast00',
+        'khur00/SP2',
+        'klei00/semester_project_2',
+        'konk05/p2',
+        //'kopp05',
+        'litv00/semprace2',
+        'neho02/SemPrace2/weather.html',
+        //'ondv03',
+        'plas02/aplikace',
+        'polj10/sp2',
+        //'stos02',
+        'vase03',
+        //'xyerv00',
+        'zemk05/SP2',
+        'benj12/sp2',
+        //'blak05',
+        //'bust01',
+        //'curj00',
+        'dust01/TempoFoxies',
+        //'hanp05',
+        //'havm10',
+        //'hoan01/sem-2',
+        'hodl01/semestralka',
+        'horj18/2SP',
+        'klaj01/SP2',
+        //'krao01',
+        'kubl05/SP2',
+        'kudp02/SM2/vk.html',
+        //'kukd01',
+        'netj00/ZP2',
+        'novj35/SP_2/youtube_video_search',
+        //'pina01',
+        'ridl00/semestralni-prace-2/timetable.html',
+        'reza02/SP2',
+        //'shia02',
+        //'sejd00',
+        'ujhl00/project2',
+        'vokp00/semestralka2',
+        //'vorj00/project_02',
+        'barp08/S2',
+        'dvop06/staticWeb',
+        'dixs00',
+        'benr01',
+        ];
+        const projects = xnames.map((xname) => {
+            return `<iframe class="project" src="https://fcp.vse.cz/4IZ268/2018-2019-ZS/www/${xname}"></iframe>`;
+        }).join('');
+        $('.container').append(`<div class="projects">${projects}</div>`)
+    </script>
+</body>
+</html>

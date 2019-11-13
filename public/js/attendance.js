@@ -1,17 +1,18 @@
 const App = {};
 App.server = '';
 
+App.doneNotification = $('<i class="fas fa-check-circle"></i>');
+App.errorNotification = $('<i class="fas fa-exclamation-circle"></i>');
+
 App.lang = {
-    'srv_xname_not_found': 'Your xname is not found. Please contact your tutor',
-    'srv_invalid_uuid': 'Bad request',
-    'srv_not_in_time': 'You cannot report your attendance now',
-    'srv_already_registered': 'You have already reported your attendance today',
-    'srv_success': 'Your attendance was sucessfully registered',
+    'srv_xname_not_found': `<span>Your xname is not found. Please contact your tutor</span>${App.errorNotification[0].outerHTML}`,
+    'srv_invalid_uuid': `<span>Bad request</span>${App.errorNotification[0].outerHTML}`,
+    'srv_not_in_time': `<span>You cannot report your attendance now</span>${App.errorNotification[0].outerHTML}`,
+    'srv_already_registered': `<span>You have already reported your attendance today</span>${App.errorNotification[0].outerHTML}`,
+    'srv_success': `<span>Your attendance was sucessfully registered</span>${App.doneNotification[0].outerHTML}`,
 };
 
 App.loadingCircle = $('<div class="lds-dual-ring"></div>');
-App.doneNotification = $('<i class="material-icons notification success">check_circle</div>');
-App.errorNotification = $('<i class="material-icons notification error">error</div>');
 App.getSmile = (points) => {
     switch (+points) {
         case 15:
@@ -53,7 +54,7 @@ App.getSmile = (points) => {
 App.handleFinishAjax = (response) => {
     const resp = response.responseJSON ? response.responseJSON : response;
     const alertType = resp.success ? 'success' : 'danger';
-    const alertMsg = $(`<div class="alert alert-${alertType}" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
+    const alertMsg = $(`<div class="alert alert-${alertType} server-message" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
     App.alertPlaceholder.replaceWith(alertMsg);
     App.alertPlaceholder = alertMsg;
     if (response.readyState === 0 || response.responseJSON) {
@@ -64,16 +65,27 @@ App.handleFinishAjax = (response) => {
         if (response.xname) {
             localStorage.setItem('xname', response.xname);
         }
-        App.loadingCircle.before(App.doneNotification);
         App.loadingCircle.before(`
-            <div class="alert alert-success" role="alert">
-                <strong>${response.xname}</strong>
-                <br>
-                <strong>${response.name}</strong>
-                <br>
-                Points: <strong>${response.points}</strong> 
-                <br>
-                <i class="${App.getSmile(response.points)}"></i>
+            <div class="alert alert-success result" role="alert">
+                <div class="student-info">
+                    <div class="student-avatar"><i class="${App.getSmile(response.semesterPoints)}"></i></div>
+                    <div class="student-xname">${response.xname}</div>
+                    <div class="student-name"><strong>${response.name}</strong></div>
+                </div>
+                <div class="student-assessment">
+                    <div class="sa-row">
+                        <div class="sa-col">Activity points</div>
+                        <div class="sa-col"><strong>${response.semesterPoints}</strong></div>
+                    </div>
+                    <div class="sa-row">
+                        <div class="sa-col">Project 1</div>
+                        <div class="sa-col"><strong>${response.sp1Points || 'N/A'}</strong></div>
+                    </div>
+                    <div class="sa-row">
+                        <div class="sa-col">Project 2</div>
+                        <div class="sa-col"><strong>${response.sp2Points || 'N/A'}</strong></div>
+                    </div>
+                </div>
             </div>`);
         App.loadingCircle.detach();
         $('.card-header p').remove();
@@ -92,6 +104,7 @@ $(document).ready(() => {
     const xnameInput = App.attendanceForm.find('[name="xname"]');
     App.attendanceForm.submit((e) => {
         e.preventDefault();
+        App.alertPlaceholder.empty();
         App.errorNotification.detach();
         App.attendanceForm.before(App.loadingCircle);
         App.attendanceForm.detach();

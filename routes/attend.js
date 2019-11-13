@@ -123,8 +123,10 @@ const returnUserInfo = (req, assesmentSheet, res, step) => {
       const xname = row[0].trim();
       if (xname) {
         xnames[xname] = { 
-          name: row[assesmentMaxCol - 1],
-          points: row[assesmentMaxCol - 2],
+          name: row[assesmentMaxCol - 3],
+          semesterPoints: row[assesmentMaxCol - 4],
+          sp1Points: row[assesmentMaxCol - 2],
+          sp2Points: row[assesmentMaxCol - 1],
         };
       }
     });
@@ -133,7 +135,9 @@ const returnUserInfo = (req, assesmentSheet, res, step) => {
       msg: 'srv_success', 
       xname: req.body.xname, 
       name: xnames[req.body.xname].name, 
-      points: xnames[req.body.xname].points 
+      semesterPoints: xnames[req.body.xname].semesterPoints, 
+      sp1Points: xnames[req.body.xname].sp1Points, 
+      sp2Points: xnames[req.body.xname].sp2Points, 
     });
     step();
   });

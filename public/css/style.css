@@ -1,3 +1,8 @@
+.card-header h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .lds-dual-ring {
   display: inline-block;
   width: 64px;
@@ -34,6 +39,11 @@
 .form-control {
   padding: 10px;
 }
+.server-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 #qrcode img {
   margin: auto;
 }
@@ -43,7 +53,7 @@ footer {
 .footer-badge {
   height: 13px;
 }
-.navbar-dark .material-icons {
+.navbar-dark i {
   color: white;
 }
 .attendance-url {
@@ -60,9 +70,30 @@ button.text-muted {
   display: flex;
   justify-content: space-between;
 }
+.student-info, .student-assessment {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sa-row {
+  display: flex;
+  padding: 5px 10px;
+}
+.sa-col {
+  flex: 1;
+}
 @media screen and (min-width: 480px) {
   .attendance-url {
     font-size: 18px;
+  }
+}
+@media screen and (min-width: 510px) {
+  .result {
+    display: flex;
+  }
+  .sa-col {
+    text-align: right;
   }
 }
 @media screen and (min-width: 720px) {
