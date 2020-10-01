@@ -120,4 +120,8 @@ $(document).ready(() => {
         xnameInput.prop('readonly', true);
         App.attendanceForm.submit();
     }
+    App.attendanceForm.find('#forget-xname').click(() => {
+        xnameInput.val('').prop('readonly', false);
+        localStorage.removeItem('xname');
+    });
 });
