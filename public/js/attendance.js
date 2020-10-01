@@ -64,6 +64,7 @@ App.handleFinishAjax = (response) => {
     } else {
         if (response.xname) {
             localStorage.setItem('xname', response.xname);
+            App.forgetXnameButton.hide();
         }
         App.loadingCircle.before(`
             <div class="alert alert-success result" role="alert">
