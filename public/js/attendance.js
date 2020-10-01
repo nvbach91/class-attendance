@@ -57,6 +57,9 @@ App.handleFinishAjax = (response) => {
     const alertMsg = $(`<div class="alert alert-${alertType} server-message" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
     App.alertPlaceholder.replaceWith(alertMsg);
     App.alertPlaceholder = alertMsg;
+    if (resp.msg === 'srv_xname_not_found') {
+        App.forgetXnameButton.show();
+    }
     if (response.readyState === 0 || response.responseJSON) {
         App.loadingCircle.before(App.attendanceForm);
         App.attendanceForm.find('button[type="submit"]').after(App.errorNotification);
@@ -64,9 +67,6 @@ App.handleFinishAjax = (response) => {
     } else {
         if (response.xname) {
             localStorage.setItem('xname', response.xname);
-        }
-        if (resp.msg === 'srv_xname_not_found') {
-            App.forgetXnameButton.show();
         }
         App.loadingCircle.before(`
             <div class="alert alert-success result" role="alert">
