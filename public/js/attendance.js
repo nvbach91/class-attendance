@@ -65,6 +65,9 @@ App.handleFinishAjax = (response) => {
         if (response.xname) {
             localStorage.setItem('xname', response.xname);
         }
+        if (resp.msg === 'srv_xname_not_found') {
+            App.forgetXnameButton.show();
+        }
         App.loadingCircle.before(`
             <div class="alert alert-success result" role="alert">
                 <div class="student-info">
@@ -97,6 +100,7 @@ $(document).ready(() => {
     const uuid = location.hash.slice(1);
     App.alertPlaceholder = $('#alert-placeholder');
     App.attendanceForm = $('#attendance-form');
+    App.forgetXnameButton = $('#forget-xname');
     if (!/[a-z0-9]{6}/.test(uuid)) {
         return App.attendanceForm.replaceWith(`<div class="alert alert-danger" role="alert">Oops! Looks live you have the wrong link. Please click <a href="/link">here</a></div>`)
     }
@@ -115,13 +119,13 @@ $(document).ready(() => {
             dataType: 'json',
         }).done(App.handleFinishAjax).fail(App.handleFinishAjax);
     });
+    App.forgetXnameButton.click(() => {
+        xnameInput.val('').prop('readonly', false);
+        localStorage.removeItem('xname');
+    });
     if (localStorage.getItem('xname')) {
         xnameInput.val(localStorage.getItem('xname'));
         xnameInput.prop('readonly', true);
         App.attendanceForm.submit();
     }
-    App.attendanceForm.find('#forget-xname').click(() => {
-        xnameInput.val('').prop('readonly', false);
-        localStorage.removeItem('xname');
-    });
 });

@@ -83,6 +83,10 @@ button.text-muted {
 .sa-col {
   flex: 1;
 }
+#forget-xname {
+  height: 100%;
+  display: none;
+}
 @media screen and (min-width: 480px) {
   .attendance-url {
     font-size: 18px;
