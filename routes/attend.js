@@ -69,9 +69,6 @@ router.post('/attend', (req, res) => {
       });
     },
     (step) => {
-      if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
-        return returnUserInfo(req, assesmentSheet, res, step);
-      }
       const attendanceSheetMaxCol = 14;
       const attendanceSheetConfig = {
         'min-row': 3,
@@ -91,6 +88,9 @@ router.post('/attend', (req, res) => {
         });
         if (!xnames[req.body.xname]) {
           return res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
+        }
+        if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
+          return returnUserInfo(req, assesmentSheet, res, step);
         }
         const rowIndex = xnames[req.body.xname].rowIndex;
         const cellIndex = rowIndex * attendanceSheetMaxCol + columnToUpdate;
