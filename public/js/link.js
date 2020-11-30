@@ -9,6 +9,8 @@ const pad = (s, l, c) => {
 };
 $(document).ready(function () {
     $('body').bootstrapMaterialDesign();
+    const footer = $('footer');
+    footer.html(footer.html().replace('©', `2019 - ${new Date().getFullYear()} ©`));
     let allowedTime = 18000000;
     let validTimes = {};
     $.when(
@@ -64,6 +66,13 @@ $(document).ready(function () {
                         </button>
                     `;
                 }).join('')}
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-header">Check your achievements</div>
+                <div class="card-body">
+                    <a href="/attendance#fedcba" class="btn btn-primary">Show me!</a>
                 </div>
             </div>
         `)

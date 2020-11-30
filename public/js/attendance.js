@@ -98,6 +98,8 @@ App.handleFinishAjax = (response) => {
 
 $(document).ready(() => {
     $('body').bootstrapMaterialDesign();
+    const footer = $('footer');
+    footer.html(footer.html().replace('©', `2019 - ${new Date().getFullYear()} ©`));
     const uuid = location.hash.slice(1);
     App.alertPlaceholder = $('#alert-placeholder');
     App.attendanceForm = $('#attendance-form');

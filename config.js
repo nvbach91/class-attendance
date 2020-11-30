@@ -10,11 +10,14 @@ Object.keys(validTimes).forEach((uuid) => {
     startTimesByColumn[vt.column] = new Date(vt.date);
     columnNumbersByUuid[uuid] = vt.column;
 });
-
+const readOnlyUuid = 'fedcba';
+const maxRows = 90; // 90 students max
 module.exports = {
     spreadsheetId,
     validTimes,
     allowedTime,
     startTimesByColumn,
     columnNumbersByUuid,
+    readOnlyUuid,
+    maxRows,
 };

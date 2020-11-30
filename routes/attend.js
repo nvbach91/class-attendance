@@ -40,13 +40,16 @@ router.get('/valid-times', (req, res) => {
 
 router.post('/attend', (req, res) => {
   const now = new Date();
-  const validColumnNumberByUuid = columnNumbersByUuid[req.body.uuid];
-  if (!validColumnNumberByUuid) {
-    return res.status(400).json({ success: false, msg: 'srv_invalid_uuid' });
-  }
-  const columnToUpdate = getColumnToUpdate(now, validColumnNumberByUuid);
-  if (!columnToUpdate) {
-    return res.status(400).json({ success: false, msg: 'srv_not_in_time' });
+  let columnToUpdate;
+  if (req.body.uuid !== config.readOnlyUuid) {
+    let validColumnNumberByUuid = columnNumbersByUuid[req.body.uuid];
+    if (!validColumnNumberByUuid) {
+      return res.status(400).json({ success: false, msg: 'srv_invalid_uuid' });
+    }
+    columnToUpdate = getColumnToUpdate(now, validColumnNumberByUuid);
+    if (!columnToUpdate) {
+      return res.status(400).json({ success: false, msg: 'srv_not_in_time' });
+    }
   }
 
   // spreadsheet key is the long id in the sheets URL
@@ -66,10 +69,13 @@ router.post('/attend', (req, res) => {
       });
     },
     (step) => {
+      if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
+        return returnUserInfo(req, assesmentSheet, res, step);
+      }
       const attendanceSheetMaxCol = 14;
       const attendanceSheetConfig = {
         'min-row': 3,
-        'max-row': 60,
+        'max-row': config.maxRows,
         'min-col': 1,
         'max-col': attendanceSheetMaxCol,
         'return-empty': true
@@ -111,7 +117,7 @@ const returnUserInfo = (req, assesmentSheet, res, step) => {
   const assesmentMaxCol = 18;
   const assesmentSheetConfig = {
     'min-row': 3,
-    'max-row': 60,
+    'max-row': config.maxRows,
     'min-col': 1,
     'max-col': assesmentMaxCol,
     'return-empty': true
