@@ -89,7 +89,7 @@ App.handleFinishAjax = (response) => {
                 </div>
             </div>`);
         App.loadingCircle.detach();
-        $('.card-header p').remove();
+        $('.card-header p:not(.text-danger)').remove();
     }
     if (resp.msg === 'srv_xname_not_found') {
         App.forgetXnameButton.show();
