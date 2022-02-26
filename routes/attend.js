@@ -1,6 +1,5 @@
 const router = require('express').Router();
-const GoogleSpreadsheet = require('google-spreadsheet');
-const async = require('async');
+const { GoogleSpreadsheet } = require('google-spreadsheet');
 const chunk = require('lodash.chunk');
 const credentials = require('../credentials.json');
 const config = require('../config');
@@ -38,7 +37,7 @@ router.get('/valid-times', (req, res) => {
   res.json(config.validTimes);
 });
 
-router.post('/attend', (req, res) => {
+router.post('/attend', async (req, res) => {
   const now = new Date();
   let columnToUpdate;
   if (req.body.uuid !== config.readOnlyUuid) {
@@ -52,101 +51,56 @@ router.post('/attend', (req, res) => {
     }
   }
 
+  try {
   // spreadsheet key is the long id in the sheets URL
-  const doc = new GoogleSpreadsheet(config.spreadsheetId);
-  var attendanceSheet;
-  var assesmentSheet;
-
-  async.series([
-    (step) => {
-      doc.useServiceAccountAuth(credentials, step);
-    },
-    (step) => {
-      doc.getInfo((err, info) => {
-        attendanceSheet = info.worksheets[0];
-        assesmentSheet = info.worksheets[1];
-        step();
-      });
-    },
-    (step) => {
-      const attendanceSheetMaxCol = 14;
-      const attendanceSheetConfig = {
-        'min-row': 3,
-        'max-row': config.maxRows,
-        'min-col': 1,
-        'max-col': attendanceSheetMaxCol,
-        'return-empty': true
-      };
-      attendanceSheet.getCells(attendanceSheetConfig, (err, cells) => {
-        const rows = chunk(cells.map((cell) => cell.value), attendanceSheetMaxCol);
-        const xnames = {};
-        rows.forEach((row, i) => {
-          const xname = row[0].trim();
-          if (xname) {
-            xnames[xname] = { columns: row.slice(1), rowIndex: i };
-          }
-        });
-        if (!xnames[req.body.xname]) {
-          return res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
-        }
-        if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
-          return returnUserInfo(req, assesmentSheet, res, step);
-        }
-        const rowIndex = xnames[req.body.xname].rowIndex;
-        const cellIndex = rowIndex * attendanceSheetMaxCol + columnToUpdate;
-        const cell = cells[cellIndex];
-        if (cell.value) {
-          return res.status(400).json({ success: false, msg: 'srv_already_registered' });
-        }
-        //${pad(now.getDate(), 2, '0')}.${pad(now.getMonth() + 1, 2, '0')}.${now.getFullYear()} 
-        cell.value = `${pad(now.getHours(), 2, '0')}:${pad(now.getMinutes(), 2 , '0')}:${pad(now.getSeconds(), 2, '0')}`;
-        cell.save(() => {
-          returnUserInfo(req, assesmentSheet, res, step);
-          //attendanceSheet.bulkUpdateCells(cells);
-        });
-      });
-    },
-  ], (err) => {
-    if (err) {
-      console.log('Error: ' + err);
-    }
-  });
+    const doc = new GoogleSpreadsheet(config.spreadsheetId);
+    
+    await doc.useServiceAccountAuth(credentials);
+    await doc.loadInfo();
+    const attendanceSheet = doc.sheetsByIndex[0];
+    const assesmentSheet = doc.sheetsByIndex[1];
+    
+	if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
+	  return returnUserInfo(req, assesmentSheet, res);
+	}
+	const _rows = await attendanceSheet.getRows();
+	const rows = _rows.slice(1);
+    for (let i = 0; i < rows.length; i++) {
+	  const row = rows[i];
+	  const xname = row._rawData[0].trim();
+	  if (xname === req.body.xname) {
+	    if (row[`T${columnToUpdate}`]) {
+	      return res.status(400).json({ success: false, msg: 'srv_already_registered' });
+	    }
+		const newValue = `${pad(now.getHours(), 2, '0')}:${pad(now.getMinutes(), 2 , '0')}:${pad(now.getSeconds(), 2, '0')}`;
+		row[`T${columnToUpdate}`] = newValue;
+	    await row.save();
+		return returnUserInfo(req, assesmentSheet, res);
+	  }
+	};
+	res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
+  } catch (err) {
+    console.log('Error: ' + err);
+  }
 });
 
-const returnUserInfo = (req, assesmentSheet, res, step) => {
-  const assesmentMaxCol = 18;
-  const assesmentSheetConfig = {
-    'min-row': 3,
-    'max-row': config.maxRows,
-    'min-col': 1,
-    'max-col': assesmentMaxCol,
-    'return-empty': true
+const returnUserInfo = async (req, assesmentSheet, res) => {
+  const _rows = await assesmentSheet.getRows();
+  const rows = _rows.slice(1);
+  for (let i = 0; i < rows.length; i++) {
+	const row = rows[i];
+	if (row._rawData[0].trim() === req.body.xname) {
+	  return res.status(200).json({ 
+		success: true, 
+		msg: 'srv_success', 
+		xname: req.body.xname, 
+		name: row.Name, 
+		semesterPoints: row.Sem, 
+		sp1Points: row.SP1, 
+		sp2Points: row.SP2, 
+	  });
+	}
   };
-  assesmentSheet.getCells(assesmentSheetConfig, (err, cells) => {
-    const rows = chunk(cells.map((cell) => cell.value), assesmentMaxCol);
-    const xnames = {};
-    rows.forEach((row, i) => {
-      const xname = row[0].trim();
-      if (xname) {
-        xnames[xname] = { 
-          name: row[assesmentMaxCol - 3],
-          semesterPoints: row[assesmentMaxCol - 4],
-          sp1Points: row[assesmentMaxCol - 2],
-          sp2Points: row[assesmentMaxCol - 1],
-        };
-      }
-    });
-    res.status(200).json({ 
-      success: true, 
-      msg: 'srv_success', 
-      xname: req.body.xname, 
-      name: xnames[req.body.xname].name, 
-      semesterPoints: xnames[req.body.xname].semesterPoints, 
-      sp1Points: xnames[req.body.xname].sp1Points, 
-      sp2Points: xnames[req.body.xname].sp2Points, 
-    });
-    step();
-  });
 };
 
 module.exports = router;
