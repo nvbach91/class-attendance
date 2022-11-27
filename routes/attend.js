@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-const chunk = require('lodash.chunk');
 const credentials = require('../credentials.json');
 const config = require('../config');
 
