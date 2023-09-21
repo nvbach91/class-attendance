@@ -7,17 +7,15 @@ const pad = (s, l, c) => {
     }
     return ss;
 };
-$(document).ready(function () {
+$(document).ready(() => {
     $('body').bootstrapMaterialDesign();
     const footer = $('footer');
     footer.html(footer.html().replace('©', `2019 - ${new Date().getFullYear()} ©`));
-    let allowedTime = 18000000;
+    let allowedTime = 8 * 60 * 60 * 1000;
     let validTimes = {};
     $.when(
         $.getJSON('/allowed-time').done((resp) => allowedTime = resp),
-        $.getJSON('/valid-times').done((resp) => {
-            validTimes = resp;
-        })
+        $.getJSON('/valid-times').done((resp) => validTimes = resp),
     ).then(() => {
         const qrCodeContainer = $('#qrcode');
         const qrcode = new QRCode('qrcode');
@@ -44,10 +42,10 @@ $(document).ready(function () {
                     <strong>Week ${pad(validTimes[uuid].column, 2, '0')}</strong>
                     <span>${daysOfWeek[new Date(validTimes[uuid].date).getDay()]}</span>
                     <strong>${new Date(validTimes[uuid].date).toLocaleDateString('cs').split('. ').map((dp) => pad(dp, 2, '0')).join('.')}</strong>
-                </div>`
-            );
+                </div>
+            `);
         } else {
-            qrCodeContainer.before(`<div class="alert alert-danger" role="alert">There is no active attendance session</div>`)
+            qrCodeContainer.before('<div class="alert alert-danger" role="alert">There is no active attendance session</div>');
         }
 
         const weeks = Object.values(validTimes);
@@ -58,14 +56,14 @@ $(document).ready(function () {
                 <div class="card-header">Upcoming classes</div>
                 <div class="card-body">
                 ${weeks.map((week) => {
-                    return `
+            return `
                         <button class="upcoming-class btn btn-primary ${now > new Date(week.date) ? 'text-muted' : 'font-weight-bold'}">
                             <span>Week ${pad(week.column, 2, '0')}</span>
                             <span>${daysOfWeek[new Date(week.date).getDay()]}</span>
                             <span>${new Date(week.date).toLocaleDateString('cs').split('. ').map((dp) => pad(dp, 2, '0')).join('.')}</span>
                         </button>
                     `;
-                }).join('')}
+        }).join('')}
                 </div>
             </div>
             <br>
@@ -75,6 +73,6 @@ $(document).ready(function () {
                     <a href="/attendance#fedcba" class="btn btn-primary">Show me!</a>
                 </div>
             </div>
-        `)
+        `);
     });
 });

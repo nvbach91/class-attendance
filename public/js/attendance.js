@@ -13,6 +13,7 @@ App.lang = {
 };
 
 App.loadingCircle = $('<div class="lds-dual-ring"></div>');
+
 App.getSmile = (points) => {
     switch (+points) {
         case 15:
@@ -48,8 +49,7 @@ App.getSmile = (points) => {
         case 0:
             return 'far fa-poop';
     }
-}
-
+};
 
 App.handleFinishAjax = (response) => {
     const resp = response.responseJSON ? response.responseJSON : response;
@@ -105,7 +105,9 @@ $(document).ready(() => {
     App.attendanceForm = $('#attendance-form');
     App.forgetXnameButton = $('#forget-xname');
     if (!/[a-z0-9]{6}/.test(uuid)) {
-        return App.attendanceForm.replaceWith(`<div class="alert alert-danger" role="alert">Oops! Looks live you have the wrong link. Please click <a href="/link">here</a></div>`)
+        return App.attendanceForm.replaceWith(
+            '<div class="alert alert-danger" role="alert">Oops! Looks live you have the wrong link. Please click <a href="/link">here</a></div>',
+        );
     }
     App.attendanceForm.find('[name="uuid"]').val(uuid);
     const xnameInput = App.attendanceForm.find('[name="xname"]');
