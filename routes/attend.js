@@ -37,6 +37,15 @@ router.get('/valid-times', (req, res) => {
   res.json(config.validTimes);
 });
 
+const scopes = [
+  'https://www.googleapis.com/auth/spreadsheets',
+];
+const serviceAccountAuth = new JWT({
+  email: credentials.client_email,
+  key: credentials.private_key,
+  scopes,
+});
+
 router.post('/attend', async (req, res) => {
   const now = new Date();
   let columnToUpdate;
@@ -52,17 +61,8 @@ router.post('/attend', async (req, res) => {
   }
 
   try {
-    const scopes = [
-      'https://www.googleapis.com/auth/spreadsheets',
-    ];
-    const serviceAccountAuth = new JWT({
-      email: credentials.client_email,
-      key: credentials.private_key,
-      scopes,
-    });
     // spreadsheet key is the long id in the sheets URL
     const doc = new GoogleSpreadsheet(config.spreadsheetId, serviceAccountAuth);
-
     await doc.loadInfo();
     const attendanceSheet = doc.sheetsByIndex[0];
     const assesmentSheet = doc.sheetsByIndex[1];
