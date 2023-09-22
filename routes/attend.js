@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const JWT = require('google-auth-library').JWT;
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const credentials = require('../credentials.json');
 const config = require('../config');
@@ -51,10 +52,17 @@ router.post('/attend', async (req, res) => {
   }
 
   try {
+    const scopes = [
+      'https://www.googleapis.com/auth/spreadsheets',
+    ];
+    const serviceAccountAuth = new JWT({
+      email: credentials.client_email,
+      key: credentials.private_key,
+      scopes,
+    });
     // spreadsheet key is the long id in the sheets URL
-    const doc = new GoogleSpreadsheet(config.spreadsheetId);
+    const doc = new GoogleSpreadsheet(config.spreadsheetId, serviceAccountAuth);
 
-    await doc.useServiceAccountAuth(credentials);
     await doc.loadInfo();
     const attendanceSheet = doc.sheetsByIndex[0];
     const assesmentSheet = doc.sheetsByIndex[1];
@@ -68,11 +76,11 @@ router.post('/attend', async (req, res) => {
       const row = rows[i];
       const xname = row._rawData[0].trim();
       if (xname === req.body.xname) {
-        if (row[`T${columnToUpdate}`]) {
+        if (row._rawData[columnToUpdate]) {
           return res.status(400).json({ success: false, msg: 'srv_already_registered' });
         }
         const newValue = `${pad(now.getHours(), 2, '0')}:${pad(now.getMinutes(), 2, '0')}:${pad(now.getSeconds(), 2, '0')}`;
-        row[`T${columnToUpdate}`] = newValue;
+        row._rawData[columnToUpdate] = newValue;
         await row.save();
         return returnUserInfo(req, assesmentSheet, res);
       }
@@ -93,10 +101,10 @@ const returnUserInfo = async (req, assesmentSheet, res) => {
         success: true,
         msg: 'srv_success',
         xname: req.body.xname,
-        name: row.Name,
-        semesterPoints: row.Sem,
-        sp1Points: row.SP1,
-        sp2Points: row.SP2,
+        semesterPoints: row._rawData[14],
+        name: row._rawData[15],
+        sp1Points: row._rawData[16],
+        sp2Points: row._rawData[17],
       });
     }
   }

@@ -107,3 +107,5 @@ dist
 /iisnode/
 /server.js
 /web.config
+
+.vscode/
