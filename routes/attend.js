@@ -105,6 +105,7 @@ const returnUserInfo = async (req, assesmentSheet, res) => {
         name: row._rawData[15],
         sp1Points: row._rawData[16],
         sp2Points: row._rawData[17],
+        notes: row._rawData[20],
       });
     }
   }

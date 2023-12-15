@@ -76,6 +76,9 @@ button.text-muted {
   flex-direction: column;
   justify-content: center;
 }
+.student-notes {
+  text-align: left;
+}
 .sa-row {
   display: flex;
   padding: 5px 10px;

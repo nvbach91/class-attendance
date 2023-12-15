@@ -57,6 +57,9 @@ App.handleFinishAjax = (response) => {
     const alertMsg = $(`<div class="alert alert-${alertType} server-message" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
     App.alertPlaceholder.replaceWith(alertMsg);
     App.alertPlaceholder = alertMsg;
+    if (App.uuid === 'fedcba') {
+        App.alertPlaceholder.hide();
+    }
     if (response.readyState === 0 || response.responseJSON) {
         App.loadingCircle.before(App.attendanceForm);
         App.attendanceForm.find('button[type="submit"]').after(App.errorNotification);
@@ -87,7 +90,14 @@ App.handleFinishAjax = (response) => {
                         <div class="sa-col"><strong>${response.sp2Points || 'N/A'}</strong></div>
                     </div>
                 </div>
-            </div>`);
+            </div>
+            ${response.notes ? `
+                <div class="alert alert-warning student-notes" role="alert">
+                    <h4>Notes: Project 1</h4>
+                    <pre>${response.notes}</pre>
+                </div>
+            ` : ''}
+        `);
         App.loadingCircle.detach();
         $('.card-header p:not(.text-danger)').remove();
     }
@@ -98,18 +108,19 @@ App.handleFinishAjax = (response) => {
 
 $(document).ready(() => {
     $('body').bootstrapMaterialDesign();
+    App.uuid = location.hash.slice(1);
     const footer = $('footer');
     footer.html(footer.html().replace('©', `2019 - ${new Date().getFullYear()} ©`));
-    const uuid = location.hash.slice(1);
+    
     App.alertPlaceholder = $('#alert-placeholder');
     App.attendanceForm = $('#attendance-form');
     App.forgetXnameButton = $('#forget-xname');
-    if (!/[a-z0-9]{6}/.test(uuid)) {
+    if (!/[a-z0-9]{6}/.test(App.uuid)) {
         return App.attendanceForm.replaceWith(
             '<div class="alert alert-danger" role="alert">Oops! Looks live you have the wrong link. Please click <a href="/link">here</a></div>',
         );
     }
-    App.attendanceForm.find('[name="uuid"]').val(uuid);
+    App.attendanceForm.find('[name="uuid"]').val(App.uuid);
     const xnameInput = App.attendanceForm.find('[name="xname"]');
     App.attendanceForm.submit((e) => {
         e.preventDefault();
@@ -132,5 +143,8 @@ $(document).ready(() => {
         xnameInput.val(localStorage.getItem('xname'));
         xnameInput.prop('readonly', true);
         App.attendanceForm.submit();
+    }
+    if (App.uuid === 'fedcba') {
+        $('#out-of-attendance-warning').remove();
     }
 });
