@@ -68,7 +68,7 @@ router.post('/attend', async (req, res) => {
     const assesmentSheet = doc.sheetsByIndex[1];
 
     if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
-      return returnUserInfo(req, assesmentSheet, res);
+      return await returnUserInfo(req, assesmentSheet, res);
     }
     const _rows = await attendanceSheet.getRows();
     const rows = _rows.slice(1);
@@ -82,10 +82,10 @@ router.post('/attend', async (req, res) => {
         const newValue = `${pad(now.getHours(), 2, '0')}:${pad(now.getMinutes(), 2, '0')}:${pad(now.getSeconds(), 2, '0')}`;
         row._rawData[columnToUpdate] = newValue;
         await row.save();
-        return returnUserInfo(req, assesmentSheet, res);
+        return await returnUserInfo(req, assesmentSheet, res);
       }
     }
-    res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
+    return res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
   } catch (err) {
     console.log(`Error: ${err}`);
   }
@@ -109,6 +109,7 @@ const returnUserInfo = async (req, assesmentSheet, res) => {
       });
     }
   }
+  return res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
 };
 
 module.exports = router;
