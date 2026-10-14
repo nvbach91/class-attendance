@@ -16,7 +16,7 @@ const reportAttendance = async (xname) => {
   });
 
   const result = await response.json();
-  console.log(`HTTP ${response.status}: ${result.msg} ${xname}`);
+  console.error(`HTTP ${response.status}: ${result.msg} ${xname}`);
 };
 (async () => {
   try {

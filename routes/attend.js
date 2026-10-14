@@ -203,9 +203,9 @@ router.post('/attend', async (req, res) => {
     if (!assessmentRow) {
       return res.status(404).json({ success: false, msg: 'srv_xname_not_found' });
     }
-    return sendUserInfo(req, (assessmentValues[0] || [])[0] || [], res);
+    return sendUserInfo(req, assessmentValues[0], res);
   } catch (err) {
-    console.log(`Error: ${err}`);
+    console.error(`Error: ${err}`);
     return res.status(500).json({ success: false, msg: 'srv_internal_error' });
   }
 });
