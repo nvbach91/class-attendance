@@ -104,6 +104,15 @@ App.handleFinishAjax = (response) => {
     if (resp.msg === 'srv_xname_not_found') {
         App.forgetXnameButton.show();
     }
+    if (resp.msg === 'srv_already_registered') {
+        App.readPointsButton.remove();
+        App.readPointsButton = $('<button class="btn btn-primary btn-raised" id="read-points">Check your points</button>');
+        App.readPointsButton.on('click', () => {
+            location.href = '/attendance/#fedcba';
+            location.reload();
+        });
+        App.alertPlaceholder.after(App.readPointsButton);
+    }
 };
 
 $(document).ready(() => {
@@ -112,6 +121,7 @@ $(document).ready(() => {
     const footer = $('footer');
     footer.html(footer.html().replace('©', `2019 - ${new Date().getFullYear()} ©`));
     
+    App.readPointsButton = $('#read-points');
     App.alertPlaceholder = $('#alert-placeholder');
     App.attendanceForm = $('#attendance-form');
     App.forgetXnameButton = $('#forget-xname');
