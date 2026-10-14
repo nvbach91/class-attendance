@@ -16,7 +16,7 @@ Object.keys(validTimes).forEach((uuid) => {
     columnNumbersByUuid[uuid] = vt.column;
 });
 
-const readOnlyUuid = 'fedcba';
+const readPointsUuid = 'fedcba';
 
 module.exports = {
     spreadsheetId,
@@ -24,5 +24,5 @@ module.exports = {
     allowedTime,
     startTimesByColumn,
     columnNumbersByUuid,
-    readOnlyUuid,
+    readPointsUuid,
 };

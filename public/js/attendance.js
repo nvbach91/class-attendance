@@ -1,4 +1,5 @@
 const App = {};
+App.readPointsUuid = 'fedcba';
 App.server = '';
 
 App.doneNotification = $('<i class="fas fa-check-circle"></i>');
@@ -57,7 +58,7 @@ App.handleFinishAjax = (response) => {
     const alertMsg = $(`<div class="alert alert-${alertType} server-message" role="alert">${App.lang[resp.msg] || resp.msg}</div>`);
     App.alertPlaceholder.replaceWith(alertMsg);
     App.alertPlaceholder = alertMsg;
-    if (App.uuid === 'fedcba') {
+    if (App.uuid === App.readPointsUuid) {
         App.alertPlaceholder.hide();
     }
     if (response.readyState === 0 || response.responseJSON) {
@@ -108,7 +109,7 @@ App.handleFinishAjax = (response) => {
         App.readPointsButton.remove();
         App.readPointsButton = $('<button class="btn btn-primary btn-raised" id="read-points">Check your points</button>');
         App.readPointsButton.on('click', () => {
-            location.href = '/attendance/#fedcba';
+            location.href = `/attendance/#${App.readPointsUuid}`;
             location.reload();
         });
         App.alertPlaceholder.after(App.readPointsButton);
@@ -154,7 +155,7 @@ $(document).ready(() => {
         xnameInput.prop('readonly', true);
         App.attendanceForm.submit();
     }
-    if (App.uuid === 'fedcba') {
+    if (App.uuid === App.readPointsUuid) {
         $('#out-of-attendance-warning').remove();
     }
 });

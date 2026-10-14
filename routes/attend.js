@@ -161,7 +161,7 @@ const toColumnLetter = (columnNumber) => {
 router.post('/attend', async (req, res) => {
   const now = new Date();
   let columnToUpdate;
-  if (req.body.uuid !== config.readOnlyUuid) {
+  if (req.body.uuid !== config.readPointsUuid) {
     const validColumnNumberByUuid = columnNumbersByUuid[req.body.uuid];
     if (!validColumnNumberByUuid) {
       return res.status(400).json({ success: false, msg: 'srv_invalid_uuid' });
@@ -177,7 +177,7 @@ router.post('/attend', async (req, res) => {
     const attendanceSheet = doc.sheetsByIndex[0];
     const assesmentSheet = doc.sheetsByIndex[1];
 
-    if (req.body.uuid === config.readOnlyUuid) { /// read-only, don't update anything
+    if (req.body.uuid === config.readPointsUuid) { /// read-only, don't update anything
       return await returnUserInfo(req, assesmentSheet, res);
     }
     const studentRows = await getStudentRows(attendanceSheet, assesmentSheet);
